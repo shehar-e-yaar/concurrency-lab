@@ -56,7 +56,9 @@ static void *monitor(void *arg) {
         for (int i = 0; i < count; ++i) queue[i] = p->queue[(p->head + i) % CAPACITY].id;
         check(pthread_mutex_unlock(&p->mutex));
         if (live || done) {
-            if (live) printf("\033[H");
+            /* Erase the previous frame before drawing: shorter lines must
+               not leave old counter digits or queued job IDs behind. */
+            if (live) printf("\033[H\033[J");
             printf("CONCURRENCY LAB | PID %ld | %.1f seconds\n", (long)getpid(), elapsed);
             printf("Workers: %d   Queued: %d/%d   Completed: %d/%d\n\n", p->workers, count, CAPACITY, completed, p->total);
             puts("WORKER   STATE       JOB       FINISHED");
